@@ -1,5 +1,6 @@
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const cors = require('cors')({origin: true});
 const axios = require('axios')
 
 
@@ -18,7 +19,7 @@ const axiosInstance = axios.create({
 
 const verifyToken = async accessToken => {
   const responce = await axiosInstance
-        .get('/oauth2/v2.1/verify', {params: {accessToken: accessToken}})
+        .get('/oauth2/v2.1/verify', {params: {access_token: accessToken}})
   if (responce.status !== 200) {
     console.error(responce.data.error_description)
     throw new Error(responce.data.error)
@@ -50,41 +51,41 @@ const getProfile = async accessToken => {
 exports.login = functions
   .region('asia-northeast1')
   .https
-  .onRequest(async (req, res) => {
-    const accessToken = req.body.accessToken
-    console.log(accessToken)
-    try {
-      await verifyToken(accessToken)
-      const profile = await getProfile(accessToken)
+  .onRequest((req, res) => {
+    cors(req, res, async () => {
+      const accessToken = req.body.accessToken
+      try {
+        await verifyToken(accessToken)
+        const profile = await getProfile(accessToken)
 
-      const createRequest = {}
-      createRequest["uid"] = 'line:' + profile.userId
-      createRequest["displayName"] = profile.displayName
-      createRequest["photoURL"] = profile.pictureUrl
+        const createRequest = {}
+        createRequest["uid"] = 'line:' + profile.userId
+        createRequest["displayName"] = profile.displayName
+        createRequest["photoURL"] = profile.pictureUrl
 
-      await admin.auth().getUser(createRequest.uid).then(()=>{
-        console.log(`user ${createRequest.uid} was found`)
-      }).catch(async error => {
-        if (error.code === 'auth/user-not-found'){
-          await admin.auth().createUser(createRequest).then(() => {
-            console.log('created user succesfully.')
-          })
+        await admin.auth().getUser(createRequest.uid).then(()=>{
+          console.log(`user ${createRequest.uid} was found`)
+        }).catch(async error => {
+          if (error.code === 'auth/user-not-found'){
+            await admin.auth().createUser(createRequest).then(() => {
+              console.log('created user succesfully.')
+            })
+          }
+        })
+
+        const claims = {
+          provider: 'LINE'
         }
-      })
-
-      const claims = {
-        provider: 'LINE'
+        await admin.auth().setCustomUserClaims(createRequest.uid, claims)
+        
+        const firebaseCustomToken = await admin.auth().createCustomToken(createRequest.uid)
+        
+        res.status(200).send({
+          firebase_token: firebaseCustomToken
+        })
+        
+      } catch (e) {
+        console.log("Error: " + e)
       }
-      console.log(claims)
-      await admin.auth().setCustomUserClaims(createRequest.uid, claims)
-      
-      const firebaseCustomToken = await admin.auth().createCustomToken(createRequest.uid)
-      
-      res.status(200).send({
-        firebase_token: firebaseCustomToken
-      })
-      
-    } catch (e) {
-      
-    }
+    })
   })

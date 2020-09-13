@@ -25,4 +25,4 @@ For functions
 
 `cd functions`
 
-`npm install --save axios`
+`npm install --save axios cors`
