@@ -8,9 +8,9 @@ const App = ()  => {
   return (
     <div className="App">
       <AuthProvider>
-        <LiffProvider>
+      {/*   {/\* <LiffProvider> *\/} */}
           <SignIn/>
-        </LiffProvider>
+      {/*   {/\* </LiffProvider> *\/} */}
       </AuthProvider>
     </div>
     

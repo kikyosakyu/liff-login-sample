@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react'
 import {auth} from '../../appConfig'
 import {config} from '../../config'
-import {liff} from '@line/liff'
+import liff from '@line/liff'
 import axios from 'axios'
 
 export const AuthContext = React.createContext()
@@ -9,10 +9,13 @@ export const AuthContext = React.createContext()
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null)
 
-  const liffId = config.line.login.liffId
+  
 
   const liffLogin = async () => {
-    liff.init({liffId})
+    const liffId = config.line.login.liffId
+    console.log(liffId)
+    await liff
+      .init({liffId})
       .catch(error => console.log(error))
 
     if (!liff.isLoggedIn()) {
