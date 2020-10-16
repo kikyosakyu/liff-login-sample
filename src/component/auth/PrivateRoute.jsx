@@ -1,19 +1,19 @@
-import React, {useContext} from 'react'
+import React from 'react'
 import {Route, Redirect} from 'react-router-dom'
-import {AuthContext} from './AuthProvider'
+import { useLoginStore } from '../../hooks/loginContext'
 
 const PrivateRoute = ({ children, ...rest }) => {
-  const { currentUser } = useContext(AuthContext)
+  const state = useLoginStore()
   return (
     <Route
       {...rest}
       render={({ location }) =>
-              (currentUser!==null) ? (
+              (state.user) ? (
                 children
               ) : (
                 <Redirect
                   to={{
-                    pathname: "/login",
+                    pathname: "/",
                     state: {from: location}
                   }}
                 />

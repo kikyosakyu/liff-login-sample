@@ -1,17 +1,24 @@
 import React from 'react';
-import {Route, Router, Switth} from 'react-router-dom'
-import {SignIn} from './component/template'
-import {AuthProvider, PrivateRoute} from './component/auth'
-import {LiffProvider} from './component/line'
+import {BrowserRouter as Router, Route, Switch} from 'react-router-dom'
+import {SignIn, Home} from './component/template'
+import {AuthProvider,PrivateRoute} from './component/auth'
+import {LoginProvider} from './hooks/loginContext'
+
+
 
 const App = ()  => {
   return (
     <div className="App">
-      <AuthProvider>
-      {/*   {/\* <LiffProvider> *\/} */}
-          <SignIn/>
-      {/*   {/\* </LiffProvider> *\/} */}
-      </AuthProvider>
+      <LoginProvider>
+        <AuthProvider>
+          <Router>
+            <Switch>
+              <Route exact path="/" component={SignIn}></Route>
+              <PrivateRoute exact path="/home" component={Home}></PrivateRoute>
+            </Switch>
+          </Router>
+        </AuthProvider>
+      </LoginProvider>
     </div>
     
   );
