@@ -8,19 +8,16 @@ import {LoginProvider} from './hooks/loginContext'
 
 const App = ()  => {
   return (
-    <div className="App">
-      <LoginProvider>
+    <LoginProvider>
+      <Router>
         <AuthProvider>
-          <Router>
-            <Switch>
-              <Route exact path="/" component={SignIn}></Route>
-              <PrivateRoute exact path="/home" component={Home}></PrivateRoute>
-            </Switch>
-          </Router>
+          <Switch>
+            <Route exact path="/" component={SignIn}></Route>
+            <PrivateRoute exact path="/home" component={Home}></PrivateRoute>
+          </Switch>
         </AuthProvider>
-      </LoginProvider>
-    </div>
-    
+      </Router>
+    </LoginProvider>
   );
 }
 

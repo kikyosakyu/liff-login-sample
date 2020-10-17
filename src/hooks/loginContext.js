@@ -1,13 +1,8 @@
-import React, {useEffect, createContext} from 'react'
-import {auth} from '../appConfig'
-import {config} from '../config'
 import makeStore from '../common/makeStore'
-import axios from 'axios'
-import liff from '@line/liff'
 
 const initialState = {
   user: null,
-  client: true
+  client: false
 }
 
 const reducer = (state, action) => {

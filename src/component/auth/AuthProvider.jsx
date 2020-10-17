@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react'
+import React, {useEffect} from 'react'
 import {auth} from '../../appConfig'
 import {config} from '../../config'
 import axios from 'axios'
@@ -14,7 +14,6 @@ const AuthProvider = ({ children }) => {
   const history = useHistory()
 
   const liffId = config.line.login.liffId
-  console.log(liffId)
   
   useEffect(() => {
     liffInit()
@@ -26,49 +25,52 @@ const AuthProvider = ({ children }) => {
         history.push("/home")
       } else {
         console.log("Not logged in firebase")
-        
-        if (state.client) {
-          liffLogin()
-        }
-        
-        const accessToken = liff.getAccessToken()
-        const url = `${config.functions.hostName}/login`
-        const body = {
-          accessToken: accessToken
-        }
-        axios.post(url, body).then(res => {
-          const customToken = res.data.firebase_token
-          auth.signInWithCustomToken(customToken).then(res => {
-            dispatch({type: 'USER', payload: res.user})
-          })
-        })
       }
     }) 
   }, [])
 
+  useEffect(() => {
+    if (state.client) {
+      liffLogin()
+    }
+  }, [state.client])
+
   const liffInit = async () => {
+    dispatch({type: 'CLIENT', payload: liff.isInClient()})
     await liff
       .init({liffId})
       .catch(error => console.log(error))
-
-    const client = liff.isInClient()
-    dispatch({type: 'CLIENT', payload: client})
-    console.log(state)
-    console.log(client)
   }
 
   const liffLogin = async () => {
     if (!liff.isLoggedIn()) {
-      console.log("Not Logged In LIFF!!")
       await liff.login()
       console.log("Logged in LIFF Success")
     } else {
-      console.log("Logged in LIFF Success")
+      console.log("Already logged in LIFF")
     }
+
+    const accessToken = liff.getAccessToken()
+    const url = `${config.functions.hostName}/login`
+    const body = {
+      accessToken: accessToken
+    }
+    axios.post(url, body).then(res => {
+      const customToken = res.data.firebase_token
+      auth.signInWithCustomToken(customToken).then(res => {
+        dispatch({type: 'USER', payload: res.user})
+      })
+    })
   }
-  
+
+  const liffLogout = async () => {
+    auth.signOut().then(() => {
+      dispatch({type: 'USER', payload: null})
+    }).catch((error) => console.log(error))
+  }
+
   return (
-    <AuthContext.Provider value={liffLogin}>
+    <AuthContext.Provider value={[liffLogin, liffLogout]}>
         { children }
     </AuthContext.Provider>
   )

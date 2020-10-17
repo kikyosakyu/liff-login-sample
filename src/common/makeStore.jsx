@@ -16,8 +16,13 @@ const makeStore = (reducer, initialState) => {
     )
   }
 
-  const useStore = () => useContext(storeContext)
-  const useDispatch = () => useContext(dispatchContext)
+  function useStore() {
+    return useContext(storeContext)
+  }
+
+  function useDispatch() {
+    return useContext(dispatchContext)
+  }
 
   return [StoreProvider, useStore, useDispatch]
 }
