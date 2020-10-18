@@ -25,3 +25,4 @@ yarn-error.log*
 # firebase config
 firestore.rules
 src/config.js
+/.firebase
