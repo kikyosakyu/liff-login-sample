@@ -17,33 +17,43 @@ const AuthProvider = ({ children }) => {
   
   useEffect(() => {
     liffInit()
+
+    liff.ready.then(()=>{
+      auth.onAuthStateChanged(user => {
+        if (user) {
+          console.log("Already logged in firebase")
+          dispatch({type: 'USER', payload: user})
+          history.push("/home")
+        } else {
+          console.log("Not logged in firebase")
+        }
+      }) 
+    })
     
-    auth.onAuthStateChanged(async user => {
-      if (user) {
-        console.log("Already logged in firebase")
-        dispatch({type: 'USER', payload: user})
-        history.push("/home")
-      } else {
-        console.log("Not logged in firebase")
-      }
-    }) 
   }, [])
 
   useEffect(() => {
     if (state.client) {
+      console.log("Client is LIFF, Login start")
       liffLogin()
     }
   }, [state.client])
 
   const liffInit = async () => {
-    dispatch({type: 'CLIENT', payload: liff.isInClient()})
+    console.log("liff init start")
+    console.log(liffId)
     await liff
       .init({liffId})
-      .catch(error => console.log(error))
+      .then(() => {
+        console.log("liff init finished")
+        dispatch({type: 'CLIENT', payload: liff.isInClient()})
+      })
+      .catch(error => console.log("error:" + error))
   }
 
   const liffLogin = async () => {
     if (!liff.isLoggedIn()) {
+      console.log("Not logged in LIFF")
       await liff.login()
       console.log("Logged in LIFF Success")
     } else {
@@ -69,8 +79,12 @@ const AuthProvider = ({ children }) => {
     }).catch((error) => console.log(error))
   }
 
+  const liffClose = async () => {
+    await liff.closeWindow()
+  }
+
   return (
-    <AuthContext.Provider value={[liffLogin, liffLogout]}>
+    <AuthContext.Provider value={[liffLogin, liffLogout, liffClose]}>
         { children }
     </AuthContext.Provider>
   )

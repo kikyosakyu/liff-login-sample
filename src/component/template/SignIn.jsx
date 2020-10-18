@@ -10,7 +10,9 @@ const SignIn = ({history}) => {
   return (
     <>
       {(!state.client && !state.user)
-       ? <button type="button" onClick={()=>liffLogin()}>Login</button>
+       ? <button type="button" onClick={()=>liffLogin()}>
+           SIGN IN
+         </button>
        : null}
     </>
   )
