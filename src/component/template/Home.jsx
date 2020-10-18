@@ -10,17 +10,22 @@ const Home = () => {
   
   return (
     <>
-      {state.user ?
-       (<div>hello {state.user.displayName}
-          <img src={state.user.photoURL} alt="icon"/>
-          <button
-            type="button"
-            onClick={()=>state.client ? liffClose() : liffLogout()}>
-            {state.client ? "CLOSE" : "SIGN OUT"}
-          </button>
-        </div>
-       ) :
-       (null)}
+      {state.isLoading ? (
+        "Loading..."
+      ) : (
+        state.user ? (
+          <div>hello {state.user.displayName}
+            <img src={state.user.photoURL} alt="icon"/>
+            <button
+              type="button"
+              onClick={()=>state.client ? liffClose() : liffLogout()}>
+              {state.client ? "CLOSE" : "SIGN OUT"}
+            </button>
+          </div>
+        ) : (
+          null
+        )
+      )}
     </>
   )
 }

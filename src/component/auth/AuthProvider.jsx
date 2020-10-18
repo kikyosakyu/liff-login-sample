@@ -16,6 +16,7 @@ const AuthProvider = ({ children }) => {
   const liffId = config.line.login.liffId
   
   useEffect(() => {
+    dispatch({ type: "LOADING" })
     liffInit()
 
     liff.ready.then(()=>{
@@ -29,6 +30,7 @@ const AuthProvider = ({ children }) => {
         }
       }) 
     })
+    dispatch({ type: "LOADED" })
     
   }, [])
 
@@ -52,6 +54,7 @@ const AuthProvider = ({ children }) => {
   }
 
   const liffLogin = async () => {
+    dispatch({ type: "LOADING" })
     if (!liff.isLoggedIn()) {
       console.log("Not logged in LIFF")
       await liff.login()
@@ -65,17 +68,20 @@ const AuthProvider = ({ children }) => {
     const body = {
       accessToken: accessToken
     }
-    axios.post(url, body).then(res => {
+    await axios.post(url, body).then(res => {
       const customToken = res.data.firebase_token
       auth.signInWithCustomToken(customToken).then(res => {
         dispatch({type: 'USER', payload: res.user})
+        dispatch({ type: "LOADED" })
       })
     })
   }
 
   const liffLogout = async () => {
+    dispatch({ type: "LOADING" })
     auth.signOut().then(() => {
       dispatch({type: 'USER', payload: null})
+      dispatch({ type: "LOADED" })
     }).catch((error) => console.log(error))
   }
 
