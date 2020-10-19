@@ -24,18 +24,18 @@ const AuthProvider = ({ children }) => {
         if (user) {
           console.log("Already logged in firebase")
           dispatch({type: 'USER', payload: user})
-          history.push("/home")
         } else {
           console.log("Not logged in firebase")
+          dispatch({ type: "LOADED" })
         }
       }) 
     })
-    dispatch({ type: "LOADED" })
+    
     
   }, [])
 
   useEffect(() => {
-    if (state.client) {
+    if (state.client === "LIFF") {
       console.log("Client is LIFF, Login start")
       liffLogin()
     }
@@ -72,7 +72,6 @@ const AuthProvider = ({ children }) => {
       const customToken = res.data.firebase_token
       auth.signInWithCustomToken(customToken).then(res => {
         dispatch({type: 'USER', payload: res.user})
-        dispatch({ type: "LOADED" })
       })
     })
   }

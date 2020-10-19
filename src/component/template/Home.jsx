@@ -18,7 +18,7 @@ const Home = () => {
             <img src={state.user.photoURL} alt="icon"/>
             <button
               type="button"
-              onClick={()=>state.client ? liffClose() : liffLogout()}>
+              onClick={()=>state.client==="LIFF" ? liffClose() : liffLogout()}>
               {state.client ? "CLOSE" : "SIGN OUT"}
             </button>
           </div>

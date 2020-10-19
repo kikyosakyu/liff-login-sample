@@ -2,7 +2,7 @@ import makeStore from '../common/makeStore'
 
 const initialState = {
   user: null,
-  client: false,
+  client: "",
   isLoading: true
 }
 
@@ -16,7 +16,7 @@ const reducer = (state, action) => {
   case 'CLIENT':
     return {
       ...state,
-      client: action.payload
+      client: action.payload ? "LIFF" : "EXT"
     }
   case 'LOADING':
     return {
