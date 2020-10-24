@@ -4,7 +4,7 @@ import {AuthContext} from '../auth/AuthProvider'
 import {useHistory} from 'react-router-dom'
 import {Loading} from './index'
 
-const Home = () => {
+const Profile = () => {
   const state = useLoginStore()
   const history = useHistory()
   const liffLogout = useContext(AuthContext)[1]
@@ -16,7 +16,7 @@ const Home = () => {
         <Loading />
       ) : (
         state.user ? (
-          <div>hello {state.user.displayName}
+          <div>This is profile page of {state.user.displayName}
             <img src={state.user.photoURL} alt="icon"/>
             <button
               type="button"
@@ -25,8 +25,8 @@ const Home = () => {
             </button>
             <button
               type="button"
-              onClick={()=>history.push("/profile")}>
-              PROFILE
+              onClick={()=>history.push("/home")}>
+              HOME
             </button>
           </div>
         ) : (
@@ -37,4 +37,4 @@ const Home = () => {
   )
 }
 
-export default Home
+export default Profile

@@ -3,7 +3,8 @@ import makeStore from '../common/makeStore'
 const initialState = {
   user: null,
   client: "",
-  isLoading: true
+  isLoading: true,
+  isListening: false
 }
 
 const reducer = (state, action) => {
@@ -27,6 +28,11 @@ const reducer = (state, action) => {
     return {
       ...state,
       isLoading: false
+    }
+  case 'LISTENING':
+    return {
+      ...state,
+      isListening: true
     }
   default:
     return state

@@ -1,11 +1,11 @@
 import React, {useContext, useEffect} from 'react'
-import {useLoginStore, useLoginDispatch} from '../../hooks/loginContext'
+import {useLoginStore} from '../../hooks/loginContext'
 import {AuthContext} from '../auth/AuthProvider'
 import {useHistory} from 'react-router-dom'
+import {Loading} from './index'
 
 const SignIn = () => {
   const state = useLoginStore()
-  const dispatch = useLoginDispatch()
   const history = useHistory()
 
   const liffLogin = useContext(AuthContext)[0]
@@ -13,21 +13,20 @@ const SignIn = () => {
   useEffect(() => {
     if (state.user) {
       history.push("/home")
-      dispatch({ type: "LOADED" })
     }
   }, [state.user])
 
   return (
     <>
       {state.isLoading ? (
-        "Loading..."
+        <Loading />
       ) : (
-        (state.client === "EXT" && !state.user) ? (
+        (state.client === "EXT" && !state.user && state.isListening) ? (
           <button type="button" onClick={() => liffLogin()}>
             SIGN IN
           </button>
         ) : (
-          null
+          <Loading />
         )
       )}
     </>

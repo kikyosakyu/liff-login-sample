@@ -4,15 +4,12 @@ import {config} from '../../config'
 import axios from 'axios'
 import liff from '@line/liff'
 import {useLoginStore, useLoginDispatch} from '../../hooks/loginContext'
-import {useHistory} from 'react-router-dom'
 
 export const AuthContext = React.createContext()
 
 const AuthProvider = ({ children }) => {
   const state = useLoginStore()
   const dispatch = useLoginDispatch()
-  const history = useHistory()
-
   const liffId = config.line.login.liffId
   
   useEffect(() => {
@@ -28,18 +25,30 @@ const AuthProvider = ({ children }) => {
           console.log("Not logged in firebase")
           dispatch({ type: "LOADED" })
         }
+        if (!state.isListening) {
+          dispatch({type: 'LISTENING'})
+        }
       }) 
     })
-    
-    
   }, [])
 
   useEffect(() => {
-    if (state.client === "LIFF") {
-      console.log("Client is LIFF, Login start")
-      liffLogin()
+    dispatch({ type: "LOADED" })
+  }, [state.user])
+  
+
+  useEffect(() => {
+    const query = window.location.search
+    const isSecondRedirectURL = /liffClientId=/.test(query) ? true : false
+
+    if (state.client === "LIFF" || isSecondRedirectURL) {
+      console.log("Client is LIFF.")
+      if (!state.user && state.isListening) {
+        console.log("Client is LIFF and not logged in, login start")
+        liffLogin()
+      }
     }
-  }, [state.client])
+  }, [state.client, state.isListening])
 
   const liffInit = async () => {
     console.log("liff init start")
@@ -80,7 +89,6 @@ const AuthProvider = ({ children }) => {
     dispatch({ type: "LOADING" })
     auth.signOut().then(() => {
       dispatch({type: 'USER', payload: null})
-      dispatch({ type: "LOADED" })
     }).catch((error) => console.log(error))
   }
 
